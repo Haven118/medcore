@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trifinity RP EMS AI Assistant v2 - Wasabi Enhanced</title>
+  <style>
+    * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: linear-gradient(135deg, #0d1b2a, #1b263b); color: #fff; padding: 20px; min-height: 100vh; }
+    .container { max-width: 1400px; margin: 0 auto; }
+    h1 { color: #00d4aa; text-align: center; margin-bottom: 30px; text-shadow: 0 0 10px #00d4aa; }
+    .section { background: rgba(26,32,44,0.9); padding: 25px; margin-bottom: 25px; border-radius: 15px; border-left: 6px solid #00d4aa; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+    input, textarea, select, button { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #333; border-radius: 8px; background: #1a1f2e; color: #fff; font-size: 16px; }
+    button { background: linear-gradient(45deg, #00d4aa, #00a085); cursor: pointer; font-weight: bold; border: none; transition: all 0.3s; }
+    button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,212,170,0.4); }
+    #output, #decisionOutput, #scopeOutput, #scenario, #improvements, #mistakes { background: #16213e; padding: 20px; border-radius: 10px; white-space: pre-wrap; border-left: 4px solid #00d4aa; margin-top: 15px; }
+    .priority-p1 { color: #ff4444; font-weight: bold; }
+    .priority-p2 { color: #ff8800; font-weight: bold; }
+    .priority-p3 { color: #ffaa00; font-weight: bold; }
+    .priority-p4 { color: #4CAF50; font-weight: bold; }
+    .treatment { background: #2a3d4a; padding: 10px; margin: 5px 0; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚑 Trifinity RP EMS AI Assistant v2</h1>
+    <p style="text-align: center; color: #aaa;">Wasabi Ambulance v1 Enhanced | SOP Integrated | Ready for Training</p>
+
+    <div class="section">
+      <h2>🔍 Quick Decision Support (Wasabi Injuries)</h2>
+      <input id="situation" placeholder="e.g. 'GSW torso, unconscious, heavy bleeding from leg'">
+      <button onclick="analyzeSituation()">Analyze Full Protocol</button>
+      <div id="decisionOutput"></div>
+    </div>
+
+    <div class="section">
+      <h2>🎯 Rank Scope + Wasabi Treatment Checker</h2>
+      <select id="rank">
+        <option value="">Select Your Rank</option>
+        <option value="chief">Chief (Foxtrot 1)</option>
+        <option value="deputy">Deputy Chief (Delta)</option>
+        <option value="supervisor">Supervisor (Sierra)</option>
+        <option value="doctor">Doctor (X-Ray)</option>
+        <option value="nurse">Nurse (Echo)</option>
+        <option value="resident">Resident (November)</option>
+        <option value="intern">Medical Intern (Yankee)</option>
+        <option value="adv-paramedic">Advanced Paramedic (Kilo)</option>
+        <option value="paramedic">Paramedic (Juliet)</option>
+        <option value="trainee">Bed Pan Cleaner (Romeo)</option>
+      </select>
+      <input id="treatment" placeholder="Treatment planned (e.g. suture kit + painkillers + transport)">
+      <button onclick="checkTreatment()">Validate Treatment</button>
+      <div id="scopeOutput"></div>
+    </div>
+
+    <div class="section">
+      <h2>🎲 Advanced Training Scenario</h2>
+      <button onclick="generateAdvancedScenario()">Generate MCI/Complex Scene</button>
+      <div id="scenario"></div>
+    </div>
+
+    <div class="section">
+      <h2>📈 Wasabi Treatment Matrix + Pricing</h2>
+      <button onclick="showTreatmentMatrix()">Show Complete Matrix</button>
+      <div id="matrix"></div>
+    </div>
+
+    <div class="section">
+      <h2>🚨 Common RP Mistakes by Division</h2>
+      <select id="division">
+        <option value="">Select Division</option>
+        <option value="1st">1st Responder (Field)</option>
+        <option value="2nd">2nd Responder (Ambulance)</option>
+        <option value="hospital">Hospital Staff</option>
+        <option value="trainee">Trainees</option>
+      </select>
+      <button onclick="showDivisionMistakes()">Show Division Issues</button>
+      <div id="divisionMistakes"></div>
+    </div>
+  </div>
+
+  <script>
+    // Enhanced SOP + Wasabi Data
+    const emsData = {
+      sop: {
+        response: {
+          '1stResponder': 'Paramedic/Romeo: Conscious = scene treatment. Unconscious/fatal GSW = call ambulance',
+          '2ndResponder': 'Kilo/Yankee: Secure transport to hospital',
+          'hospital': 'X-Ray/Echo/November/Yankee: Treatment/surgery (Doctors only solo)'
+        },
+        surgery: 'Doctors ONLY solo surgery. Others assist.',
+        transport: 'ALL unconscious MUST go to hospital by ambulance.'
+      },
+      wasabi: {
+        injuries: ['GSW', 'stab', 'blunt trauma', 'burns', 'leg trauma'],
+        effects: ['bleeding (bandage/suture)', 'pain (painkillers/sedatives)', 'limping (leg injuries)', 'last stand crawl'],
+        treatments: {
+          bleeding: 'Bandage/Medkit/Suture Kit',
+          pain: 'Painkillers/Sedatives (risk overdose)',
+          leg: 'Ice pack + mobility aid',
+          unconscious: 'Revive + transport'
+        },
+        pricing: {
+          revive: 5000, transport: 4000, surgery: 25000, therapy: 7500
+        }
+      },
+      ranks: {
+        trainee: { allowed: ['observe', 'radio 10-codes'], forbidden: ['treat', 'surgery', 'solo'] },
+        paramedic: { allowed: ['bls', 'stabilize conscious', 'transport conscious'], forbidden: ['hospital treatment', 'surgery'] },
+        doctor: { allowed: ['surgery', 'prescription', 'all treatments'] }
+      }
+    };
+
+    function analyzeSituation() {
+      const input = document.getElementById('situation').value.toLowerCase();
+      let priority = 'P4', response = '', treatments = [], transport = false, notes = [];
+
+      // Core SOP Logic
+      if (input.includes('unconscious') || input.includes('starfish')) {
+        priority = 'P2';
+        response = '<span class="priority-p1">🚨 IMMEDIATE AMBULANCE - NO SCENE TREATMENT</span>';
+        transport = true;
+        notes.push('SOP: All unconscious = 2nd response transport');
+      } else if (input.includes('gsw') && (input.includes('torso') || input.includes('head') || input.includes('chest'))) {
+        priority = 'P2';
+        response = '<span class="priority-p2">⚠️ FATAL AREA GSW - Stabilize minimally → Ambulance</span>';
+        transport = true;
+      } else {
+        priority = 'P4';
+        response = '<span class="priority-p4">✅ Conscious/Non-fatal - Scene treatment OK</span>';
+      }
+
+      // Wasabi Injuries
+      if (input.includes('bleeding')) treatments.push('Bandage/Suture Kit → Stop bleed');
+      if (input.includes('pain') || input.includes('burn')) treatments.push('Painkillers/Burn Cream');
+      if (input.includes('leg') || input.includes('foot')) treatments.push('Ice Pack → Limping management');
+      if (input.includes('stab') || input.includes('blunt')) treatments.push('Medkit → Stabilize');
+
+      let output = `
+        <div><b>Priority:</b> ${priority}</div>
+        <div style="font-size: 18px; margin: 10px 0;">${response}</div>
+        <div><b>Wasabi Treatments:</b></div>
+        ${treatments.map(t => `<div class="treatment">${t}</div>`).join('')}
+        <div><b>Transport Required:</b> ${transport ? 'YES (Ambulance)' : 'No - Scene OK'}</div>
+        <div><b>Notes:</b></div>
+        ${notes.map(n => `<div class="treatment">${n}</div>`).join('')}
+        <div style="margin-top: 15px; font-size: 14px; color: #aaa;">
+          Pricing: Revive $5k + Transport $4k = Total estimate ~$9k
+        </div>
+      `;
+      
+      document.getElementById('decisionOutput').innerHTML = output;
+    }
+
+    function checkTreatment() {
+      const rank = document.getElementById('rank').value;
+      const treatment = document.getElementById('treatment').value.toLowerCase();
+      
+      let status = '', allowed = false;
+      
+      if (treatment.includes('surgery') && rank !== 'doctor') {
+        status = '❌ SURGERY STRICTLY DOCTORS ONLY';
+      } else if (treatment.includes('prescription') && !['doctor'].includes(rank)) {
+        status = '❌ Prescriptions = Doctors only';
+      } else if (treatment.includes('transport') || treatment.includes('ambulance')) {
+        allowed = ['paramedic', 'adv-paramedic', 'supervisor', 'chief', 'deputy'].includes(rank);
+        status = allowed ? '✅ Ambulance team authorized' : '❌ Call 2nd response';
+      } else if (treatment.includes('bandage') || treatment.includes('suture')) {
+        allowed = !['trainee'].includes(rank);
+        status = allowed ? '✅ Bleeding control OK' : '❌ Observe only - call Paramedic';
+      } else {
+        status = '✅ Basic treatment within scope';
+      }
+      
+      document.getElementById('scopeOutput').innerHTML = `<div style="font-size: 20px;">${status}</div>`;
+    }
+
+    function generateAdvancedScenario() {
+      const mcis = [
+        'P1 MCI: Gang shootout - 4 GSWs (1 unconscious torso, 2 leg bleeds, 1 burn). Active scene.',
+        'P1 MVA pileup - 5 cars. Unconscious driver + conscious leg fractures.',
+        'Building collapse - 3 trapped, 1 critical bleed, Code 5 scene.',
+        'Nightclub overdose - 6 patients, mixed conscious/unconscious.'
+      ];
+      const scenario = mcis[Math.floor(Math.random() * mcis.length)];
+      document.getElementById('scenario').innerHTML = `
+        <h3>🚨 MASS CASUALTY INCIDENT</h3>
+        <p>${scenario}</p>
+        <p><b>Your actions as 1st Responder:</b></p>
+        <ul>
+          <li>Radio 10-32 (backup), announce P1</li>
+          <li>START triage (immediate/deferred/minimal/dead)</li>
+          <li>Secure scene (PD Code 4)</li>
+          <li>Request multiple ambulances</li>
+        </ul>
+      `;
+    }
+
+    function showTreatmentMatrix() {
+      document.getElementById('matrix').innerHTML = `
+        <h3>Wasabi Treatment Matrix + SOP Pricing</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr style="background: #00d4aa; color: black;"><th>Injury</th><th>Treatment</th><th>Who Can</th><th>Price</th></tr>
+          <tr><td>Bleeding (GSW/Stab)</td><td>Bandage → Suture Kit</td><td>Paramedic+</td><td>$5k revive</td></tr>
+          <tr><td>Pain/Burns</td><td>Painkillers/Burn Cream</td><td>Paramedic+</td><td>$2.5k touch-up</td></tr>
+          <tr><td>Limping (Leg)</td><td>Ice Pack + Crutch</td><td>All ranks</td><td>$8k full mobility</td></tr>
+          <tr><td>Unconscious</td><td>REVIVE + Ambulance</td><td>2nd Response</td><td>$9k total</td></tr>
+          <tr><td>Torso GSW</td><td>Surgery (Doctor)</td><td>DOCTOR ONLY</td><td>$25k</td></tr>
+        </table>
+      `;
+    }
+
+    function showDivisionMistakes() {
+      const division = document.getElementById('division').value;
+      const issues = {
+        '1st': 'Treating unconscious on scene, entering Code 5 areas, solo fatal GSW',
+        '2nd': 'Delayed transport, improper stretcher use, wrong priority codes',
+        'hospital': 'Non-doctors solo surgery, poor documentation',
+        'trainee': 'Independent actions, radio misuse, dummy practice'
+      };
+      document.getElementById('divisionMistakes').innerHTML = division ? 
+        `<h4>${division} Division Issues:</h4><p>${issues[division]}</p>` : '';
+    }
+  </script>
+</body>
+</html>
