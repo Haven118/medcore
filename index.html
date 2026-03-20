@@ -19,6 +19,7 @@
     .priority-p3 { color: #ffaa00; font-weight: bold; }
     .priority-p4 { color: #4CAF50; font-weight: bold; }
     .treatment { background: #2a3d4a; padding: 10px; margin: 5px 0; border-radius: 5px; }
+    .step { background: #1e2d3d; border-left: 3px solid #00d4aa; padding: 12px 15px; margin: 8px 0; border-radius: 5px; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -63,6 +64,20 @@
       <h2>📈 Wasabi Treatment Matrix + Pricing</h2>
       <button onclick="showTreatmentMatrix()">Show Complete Matrix</button>
       <div id="matrix"></div>
+    </div>
+
+    <div class="section">
+      <h2>🔬 Surgery RP Script Generator</h2>
+      <input id="surgeryPatient" placeholder="Patient name (e.g. John Doe)">
+      <input id="surgeryInjury" placeholder="Injury (e.g. GSW torso, stab wound abdomen, internal bleeding)">
+      <select id="surgeryAssist">
+        <option value="solo">Solo (Doctor only)</option>
+        <option value="nurse">With Nurse</option>
+        <option value="resident">With Resident</option>
+        <option value="intern">With Medical Intern</option>
+      </select>
+      <button onclick="generateSurgeryScript()">Generate Surgery RP Script</button>
+      <div id="surgeryOutput"></div>
     </div>
 
     <div class="section">
@@ -210,6 +225,87 @@
           <tr><td>Doctor Prescription</td><td>Official Prescription</td><td>DOCTOR ONLY</td><td>$12,000</td></tr>
           <tr><td>Surgery</td><td>Internal Operation</td><td>DOCTOR ONLY</td><td>$25,000</td></tr>
         </table>
+      `;
+    }
+
+    function generateSurgeryScript() {
+      const patient = document.getElementById('surgeryPatient').value || 'the patient';
+      const injury = document.getElementById('surgeryInjury').value.toLowerCase();
+      const assist = document.getElementById('surgeryAssist').value;
+      if (!injury) { document.getElementById('surgeryOutput').innerHTML = '<p style="color:#ff4444">Please enter an injury.</p>'; return; }
+
+      const assistLine = assist === 'solo' ? '' :
+        assist === 'nurse' ? `<div class="step">👩‍⚕️ <b>[To Nurse]</b> "I need you monitoring vitals and handing me instruments on call. Stay sharp."</div>` :
+        assist === 'resident' ? `<div class="step">🩺 <b>[To Resident]</b> "You're assisting today — watch everything I do, hand me instruments when I call for them, do not act independently."</div>` :
+        `<div class="step">🩺 <b>[To Intern]</b> "You are observing only. Do not touch the patient unless I instruct you directly."</div>`;
+
+      // Determine injury type
+      const isGSW = injury.includes('gsw') || injury.includes('gunshot') || injury.includes('bullet');
+      const isStab = injury.includes('stab') || injury.includes('knife') || injury.includes('lacerat');
+      const isTorso = injury.includes('torso') || injury.includes('abdomen') || injury.includes('chest') || injury.includes('stomach');
+      const isLeg = injury.includes('leg') || injury.includes('femur') || injury.includes('thigh');
+      const isHead = injury.includes('head') || injury.includes('skull') || injury.includes('brain');
+      const isBleeding = injury.includes('bleed') || isGSW || isStab;
+
+      let specificSteps = '';
+
+      if (isGSW && isTorso) {
+        specificSteps = `
+          <div class="step">🔍 "X-Ray confirms the bullet has lodged near the ${injury.includes('chest') ? 'left lung' : 'lower intestine'}. We need to extract it carefully."</div>
+          <div class="step">🔪 "I'm using the 10 blade now, making a controlled incision along the entry wound tract."</div>
+          <div class="step">✂️ "Extending the incision — I need retractors to hold this open. Clamp that bleeder on the left."</div>
+          <div class="step">🩸 "There's significant internal bleeding — I'm packing the cavity with gauze to control it. Suction please."</div>
+          <div class="step">🔦 "I can see the projectile — using forceps to extract the fragment now. Slow and steady."</div>
+          <div class="step">✅ "Fragment is out. Checking surrounding tissue for secondary damage."</div>
+          <div class="step">🧵 "Irrigating the cavity with saline now. No further foreign bodies detected."</div>`;
+      } else if (isStab && isTorso) {
+        specificSteps = `
+          <div class="step">🔍 "The blade has caused a deep laceration — imaging shows possible bowel perforation. We're going in."</div>
+          <div class="step">🔪 "I'm using the 10 blade, extending the wound tract into a clean surgical incision."</div>
+          <div class="step">✂️ "Retracting now — I can see the perforation site. It's about 2 centimetres. Clamp that vessel."</div>
+          <div class="step">🩸 "Controlling the bleed with electrocautery. Hold that retractor steady."</div>
+          <div class="step">🧵 "Suturing the perforation with 3-0 Vicryl — two-layer closure on the bowel wall."</div>`;
+      } else if (isLeg) {
+        specificSteps = `
+          <div class="step">🔍 "Imaging shows a ${isGSW ? 'bullet fragment near the femoral artery' : 'deep laceration with vascular involvement'}. We need to act fast."</div>
+          <div class="step">🔪 "Making the incision now with the 10 blade along the medial thigh — controlled and deliberate."</div>
+          <div class="step">🩸 "I can see the femoral artery is nicked — applying a vascular clamp immediately. Do not let that pressure drop."</div>
+          <div class="step">🧵 "Repairing the vessel wall with 5-0 Prolene suture — fine work, stay still."</div>
+          <div class="step">✅ "Vascular repair complete. Checking distal pulse — good. Flushing the wound tract."</div>`;
+      } else if (isHead) {
+        specificSteps = `
+          <div class="step">🔍 "CT confirms intracranial pressure is elevated. We need to relieve it before permanent damage sets in."</div>
+          <div class="step">✂️ "Shaving and prepping the surgical site. Making a linear incision through the scalp now."</div>
+          <div class="step">🔩 "Using the cranial drill to create a burr hole — slow controlled pressure. Watch that monitor."</div>
+          <div class="step">🩸 "Evacuating the haematoma — you can see the pressure releasing. Suction, keep it clear."</div>
+          <div class="step">✅ "Haematoma fully evacuated. Placing a drain and closing the dura with 4-0 Nurolon."</div>`;
+      } else {
+        specificSteps = `
+          <div class="step">🔍 "Assessing the injury site — imaging reviewed, I have a clear picture of what we're dealing with."</div>
+          <div class="step">🔪 "I'm using the 10 blade now, making the primary incision. Clean and controlled."</div>
+          <div class="step">✂️ "Retracting tissue to expose the injury — I need better visibility here. Suction."</div>
+          <div class="step">🩸 "Controlling any active bleeders with electrocautery. Clamp that vessel on the right."</div>
+          <div class="step">✅ "Injury site addressed. Irrigating with saline and checking for any missed damage."</div>`;
+      }
+
+      const closingSteps = `
+        <div class="step">🧵 "Closing in layers — deep tissue with 2-0 Vicryl, subcutaneous with 3-0, skin with staples."</div>
+        <div class="step">🩹 "Applying sterile dressing to the wound. Keep this site clean and dry for 48 hours."</div>
+        <div class="step">💉 "Administering post-op antibiotics and pain management. I'll write the prescription now."</div>
+        <div class="step">📋 "Surgery complete. Patient is stable — moving to recovery. I'll file the medical report. Total: $25,000."</div>`;
+
+      document.getElementById('surgeryOutput').innerHTML = `
+        <div style="margin-bottom:15px">
+          <span style="color:#00d4aa;font-weight:bold">🔬 SURGERY RP SCRIPT</span> — 
+          <span style="color:#aaa">Patient: ${patient} | Injury: ${injury}</span>
+        </div>
+        <div class="step">📢 <b>[Announce on radio]</b> "X-Ray to dispatch — 10-49, P2 surgery commencing on ${patient}. OR is live."</div>
+        <div class="step">🧼 <b>[Prep]</b> "Scrubbing in. Gowning up. Someone get me gloves — size 7.5."</div>
+        <div class="step">💉 <b>[Anaesthesia]</b> "Administering general anaesthetic now — ${patient}, count back from 10 for me."</div>
+        <div class="step">🩺 <b>[Vitals check]</b> "Vitals are ${isBleeding ? 'dropping — we need to move fast' : 'stable — good, let\'s proceed'}. Draping the patient."</div>
+        ${assistLine}
+        ${specificSteps}
+        ${closingSteps}
       `;
     }
 
