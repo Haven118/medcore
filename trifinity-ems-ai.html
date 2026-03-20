@@ -101,7 +101,8 @@
           unconscious: 'Revive + transport'
         },
         pricing: {
-          revive: 5000, transport: 4000, surgery: 25000, therapy: 7500
+          touchUp: 2500, revive: 5000, reviveMobility: 8000, therapy: 7500,
+          transport: 4000, prescription: 12000, surgery: 25000
         }
       },
       ranks: {
@@ -145,7 +146,7 @@
         <div><b>Notes:</b></div>
         ${notes.map(n => `<div class="treatment">${n}</div>`).join('')}
         <div style="margin-top: 15px; font-size: 14px; color: #aaa;">
-          Pricing: Revive $5k + Transport $4k = Total estimate ~$9k
+          Pricing: Revive $5,000 + Transport $4,000 = Total ~$9,000
         </div>
       `;
       
@@ -201,11 +202,13 @@
         <h3>Wasabi Treatment Matrix + SOP Pricing</h3>
         <table style="width: 100%; border-collapse: collapse;">
           <tr style="background: #00d4aa; color: black;"><th>Injury</th><th>Treatment</th><th>Who Can</th><th>Price</th></tr>
-          <tr><td>Bleeding (GSW/Stab)</td><td>Bandage → Suture Kit</td><td>Paramedic+</td><td>$5k revive</td></tr>
-          <tr><td>Pain/Burns</td><td>Painkillers/Burn Cream</td><td>Paramedic+</td><td>$2.5k touch-up</td></tr>
-          <tr><td>Limping (Leg)</td><td>Ice Pack + Crutch</td><td>All ranks</td><td>$8k full mobility</td></tr>
-          <tr><td>Unconscious</td><td>REVIVE + Ambulance</td><td>2nd Response</td><td>$9k total</td></tr>
-          <tr><td>Torso GSW</td><td>Surgery (Doctor)</td><td>DOCTOR ONLY</td><td>$25k</td></tr>
+          <tr><td>Touch Up (minor/conscious)</td><td>Medkit / Basic Treatment</td><td>Paramedic+</td><td>$2,500</td></tr>
+          <tr><td>Revive (unconscious)</td><td>Revive + Stabilize</td><td>2nd Response</td><td>$5,000</td></tr>
+          <tr><td>Revive + Mobility</td><td>Revive + Crutch/Wheelchair</td><td>2nd Response</td><td>$8,000</td></tr>
+          <tr><td>Therapy Session</td><td>Psych/Rehab Session</td><td>Authorized Staff</td><td>$7,500</td></tr>
+          <tr><td>Ambulance Transport</td><td>Scene → Hospital Transfer</td><td>2nd Response</td><td>$4,000</td></tr>
+          <tr><td>Doctor Prescription</td><td>Official Prescription</td><td>DOCTOR ONLY</td><td>$12,000</td></tr>
+          <tr><td>Surgery</td><td>Internal Operation</td><td>DOCTOR ONLY</td><td>$25,000</td></tr>
         </table>
       `;
     }
