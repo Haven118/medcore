@@ -228,6 +228,66 @@
       `;
     }
 
+    const complications = {
+      gsw: [
+        { name: 'Internal bleeding worsens', response: '"We have a bleed that\'s accelerating — I\'m packing the cavity with additional gauze and applying direct pressure. Someone call the blood bank, we may need a transfusion."' },
+        { name: 'Bullet fragmented on impact', response: '"The round has fragmented — I can see at least three separate pieces. I\'m going to need more time. Using the fluoroscope to locate every fragment before I extract."' },
+        { name: 'Bone splintering discovered', response: '"There\'s bone splintering at the entry site — fragments are scattered. I\'m carefully debriding the area and removing loose bone chips with rongeurs."' },
+        { name: 'Nerve damage causing loss of movement', response: '"I\'m seeing nerve involvement here — the radial nerve has been compromised. I\'m marking the site for a neurologist consult post-op. We preserve what we can."' },
+        { name: 'Infection risk due to contamination', response: '"The wound tract shows signs of contamination — likely from clothing fibres. I\'m doing a full irrigation with betadine solution and we\'re going on broad-spectrum IV antibiotics immediately."' },
+        { name: 'Collapsed lung', response: '"Left lung has partially collapsed — I need a chest tube in now. Someone prep a 28 French. I\'m inserting at the 5th intercostal space, midaxillary line."' },
+        { name: 'Organ perforation', response: '"The bullet has nicked the bowel — I can see spillage. Clamping both ends of the perforation now. We\'re doing a resection and reanastomosis. This just got longer."' },
+        { name: 'Blood pressure instability', response: '"BP is crashing — 80 over 50. Push a litre of saline wide open and get me vasopressors. I\'m not closing until we stabilise this."' },
+        { name: 'Delayed bleeding resumes', response: '"We had it controlled and now it\'s back — there\'s a secondary vessel involved. I\'m applying a second clamp and re-suturing the bleeder. Hold pressure there."' },
+        { name: 'No complication', response: '"Checking the field thoroughly... everything looks clean. No secondary damage, no hidden bleeders. We\'re in good shape — proceeding to close."' }
+      ],
+      stab: [
+        { name: 'Hidden arterial bleed', response: '"There\'s an arterial bleed hiding behind the bowel — I can see it pulsing. Clamping now. Do not let that pressure drop below 90."' },
+        { name: 'Organ nicked', response: '"The blade has nicked the liver — it\'s a minor laceration but it\'s bleeding steadily. Applying argon beam coagulation to seal the surface."' },
+        { name: 'Internal bleeding resumes', response: '"We\'ve got a re-bleed — the initial clot has dislodged. I\'m going back in with the cautery. Suction, keep the field clear."' },
+        { name: 'Nerve damage discovered', response: '"I\'m seeing nerve fibre disruption along the wound tract. Flagging this for neuro post-op — we do not cut further, we protect and preserve."' },
+        { name: 'Foreign object left in wound', response: '"There\'s a fragment in here — looks like blade tip. Using the metal detector probe to confirm location before I extract with forceps. Slow and precise."' },
+        { name: 'Infection risk due to contamination', response: '"Wound shows contamination — possible faecal matter from bowel proximity. Full betadine wash, packing with antibiotic gauze, and starting IV Metronidazole now."' },
+        { name: 'Lung puncture', response: '"Lung has been punctured — I can hear the air leak. Inserting a chest drain immediately and sealing the pleural breach with a purse-string suture."' },
+        { name: 'Blood pressure instability', response: '"Pressure is dropping fast. Push fluids, get me O-neg on standby. I\'m working as fast as I safely can — everyone stay focused."' },
+        { name: 'Muscle tearing', response: '"The blade has caused significant muscle tearing along the oblique — I\'m debriding the damaged tissue and reapproximating the muscle layers with 0-Vicryl."' },
+        { name: 'No complication', response: '"Field is clean, no hidden damage. Wound tract is isolated and controlled. Good outcome — let\'s close."' }
+      ],
+      burn: [
+        { name: 'Severe blistering', response: '"Blistering is extensive across the burn site — I\'m carefully debriding the necrotic tissue and applying silver sulfadiazine dressing. This will need daily changes."' },
+        { name: 'Risk of infection', response: '"The burn surface is showing early signs of bacterial colonisation. Starting topical antimicrobials and systemic antibiotics. Strict sterile technique from here."' },
+        { name: 'Shock due to fluid loss', response: '"Patient is going into hypovolaemic shock from fluid loss through the burn surface. Running Parkland formula fluids — 4ml per kg per percent burn. Move fast."' },
+        { name: 'Airway damage', response: '"I\'m seeing soot in the airway and mucosal swelling — this is inhalation injury. Anaesthetics, I need this patient intubated now before the airway closes completely."' },
+        { name: 'Nerve damage', response: '"The burn depth has reached the nerve layer — patient will have reduced sensation in this area. Documenting for neurology and managing with IV pain protocol."' },
+        { name: 'Secondary skin damage from materials', response: '"There are clothing fibres and synthetic material fused to the wound bed. I\'m carefully removing each piece with fine forceps under irrigation — this takes patience."' },
+        { name: 'Delayed healing due to depth', response: '"This is a full thickness burn — it will not heal on its own. I\'m marking this site for skin grafting. We\'ll need to schedule a follow-up procedure."' },
+        { name: 'Blood pressure instability', response: '"Pressure is unstable — the systemic inflammatory response is kicking in. Vasopressors, fluid bolus, and I want continuous monitoring every two minutes."' },
+        { name: 'Pain escalation', response: '"Patient vitals are spiking — pain is breaking through the anaesthetic. Pushing an additional bolus of fentanyl and adjusting the anaesthetic depth. Hold steady."' },
+        { name: 'No complication', response: '"Burn site is clean with no secondary complications. Debriding and dressing now. Good prognosis with proper aftercare."' }
+      ],
+      blunt: [
+        { name: 'Internal bleeding', response: '"There\'s a significant internal bleed from the impact site — I\'m packing and clamping. We need to find the source. Suction, keep it clear so I can see."' },
+        { name: 'Organ bruising', response: '"The spleen is badly bruised and showing micro-tears. I\'m assessing whether we can preserve it or if we need a splenectomy. Holding pressure while I decide."' },
+        { name: 'Bone fracture discovered', response: '"There\'s a fracture here that wasn\'t visible on initial imaging — the rib has displaced inward. I\'m carefully repositioning the fragment and plating it."' },
+        { name: 'Concussion symptoms', response: '"Patient is showing signs of intracranial involvement — pupils are unequal. I\'m calling for a neuro consult immediately and ordering an emergency CT mid-procedure."' },
+        { name: 'Spinal damage risk', response: '"I\'m seeing bruising along the posterior — there may be spinal involvement. I\'m halting any movement of the patient and calling ortho spine in now."' },
+        { name: 'Blood pressure instability', response: '"Pressure just tanked — this blunt trauma has caused more internal damage than we thought. Massive transfusion protocol, now. Let\'s go."' },
+        { name: 'Hidden haematoma', response: '"There\'s a haematoma hiding behind the liver — it\'s under pressure and about to rupture. I\'m evacuating it now before it blows. Clamp ready."' },
+        { name: 'Nerve compression', response: '"The swelling is compressing the sciatic nerve — I\'m performing a fasciotomy to relieve the pressure. If we don\'t do this now, we risk permanent damage."' },
+        { name: 'Delayed swelling', response: '"Swelling is progressing faster than expected — compartment pressure is rising. I\'m extending the incision to decompress before we close."' },
+        { name: 'No complication', response: '"Thorough inspection complete — no hidden damage beyond the primary injury. Patient is holding stable. Proceeding to close."' }
+      ]
+    };
+
+    function getComplication(injury) {
+      const isGSW = injury.includes('gsw') || injury.includes('gunshot') || injury.includes('bullet');
+      const isStab = injury.includes('stab') || injury.includes('knife') || injury.includes('lacerat');
+      const isBurn = injury.includes('burn');
+      const isBlunt = injury.includes('blunt') || injury.includes('trauma') || injury.includes('fracture') || injury.includes('impact');
+      const pool = isGSW ? complications.gsw : isStab ? complications.stab : isBurn ? complications.burn : isBlunt ? complications.blunt : complications.gsw;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
     function generateSurgeryScript() {
       const patient = document.getElementById('surgeryPatient').value || 'the patient';
       const injury = document.getElementById('surgeryInjury').value.toLowerCase();
@@ -294,6 +354,8 @@
         <div class="step">💉 "Administering post-op antibiotics and pain management. I'll write the prescription now."</div>
         <div class="step">📋 "Surgery complete. Patient is stable — moving to recovery. I'll file the medical report. Total: $25,000."</div>`;
 
+      const complication = getComplication(injury);
+
       document.getElementById('surgeryOutput').innerHTML = `
         <div style="margin-bottom:15px">
           <span style="color:#00d4aa;font-weight:bold">🔬 SURGERY RP SCRIPT</span> — 
@@ -305,6 +367,10 @@
         <div class="step">🩺 <b>[Vitals check]</b> "Vitals are ${isBleeding ? 'dropping — we need to move fast' : 'stable — good, let\'s proceed'}. Draping the patient."</div>
         ${assistLine}
         ${specificSteps}
+        <div style="margin: 15px 0; padding: 12px; background: #2a1a1a; border-left: 4px solid #ff4444; border-radius: 5px;">
+          <div style="color:#ff4444;font-weight:bold;margin-bottom:6px">⚠️ COMPLICATION DISCOVERED: ${complication.name}</div>
+          <div class="step" style="border-left-color:#ff4444">${complication.response}</div>
+        </div>
         ${closingSteps}
       `;
     }
